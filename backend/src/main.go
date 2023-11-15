@@ -1,18 +1,23 @@
 package main
 
 import (
+	"context"
+	"log"
 	db "myapp/database"
-	_ "myapp/http"
+	http "myapp/http"
 )
 
 func main() {
-	err := db.Connect("postgres", "root", "localhost:5432", "postgres")
+	ctx := context.Background()
+	err := db.Connect(ctx, "postgres", "root", "wildberriesDb")
 
 	if err != nil {
-		panic(err)
+		log.Fatalln(err)
 	} else {
 		db.Configurate()
 	}
 
-	db.Disonnect()
+	defer db.Disonnect()
+
+	http.StartListening(":8080")
 }

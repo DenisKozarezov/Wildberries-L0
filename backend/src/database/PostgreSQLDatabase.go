@@ -1,16 +1,14 @@
 package database
 
 import (
-	"database/sql"
+	"context"
 	"fmt"
 	"log"
-	"myapp/http"
-	"time"
 
-	_ "github.com/lib/pq"
+	"github.com/jackc/pgx"
 )
 
-var db *sql.DB
+var db *pgx.Conn
 
 type Config struct {
 	Database string
@@ -20,55 +18,48 @@ type Config struct {
 	Protocol string
 }
 
-func Connect(login string, pass string, addr string, dbName string) error {
+func Print(cfg *pgx.ConnConfig) {
+	log.Println("============= INFO =============")
+	log.Println("DB Name: \t", cfg.Database)
+	log.Println("User: \t", cfg.User)
+	log.Println("Host: \t", cfg.Host)
+	log.Println("Port: \t", cfg.Port)
+}
+
+func Connect(ctx context.Context, login string, pass string, dbName string) error {
 	log.Println("Opening a connection to database...")
 
-	cfg := Config{
-		Database: dbName,
-		User:     login,
-		Password: pass,
-		Host:     addr,
-		Protocol: http.PROT_TCP,
-	}
-
-	connectionStr := fmt.Sprintf("%s://%s:%s@%s/postgres?sslmode=disable", cfg.Database, cfg.User, cfg.Password, cfg.Host)
+	connectionStr := fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=disable", login, pass, "localhost:5432", dbName)
+	cfg, err := pgx.ParseConnectionString(connectionStr)
 	log.Println("Connection string:", connectionStr)
 
-	defer Print(cfg)
+	defer Print(&cfg)
 
 	// Get a database handle.
-	var err error
-	db, err = sql.Open("postgres", connectionStr)
+	db, err = pgx.Connect(cfg)
 	if err != nil {
 		log.Fatal(err)
 		return err
 	}
 
-	pingErr := db.Ping()
-	if pingErr != nil {
-		log.Fatal(pingErr)
+	pingErr := Ping(ctx)
+	if err != nil {
 		return pingErr
 	}
+
 	log.Println("Connected to database!")
 	return err
 }
 
+func Ping(ctx context.Context) error {
+	return db.Ping(ctx)
+}
+
 func Configurate() {
-	db.SetMaxOpenConns(10)
-	db.SetMaxIdleConns(10)
-	db.SetConnMaxLifetime(time.Minute * 5)
+
 }
 
 func Disonnect() {
 	log.Println("Disconnecting from the database...")
 	db.Close()
-}
-
-func Print(cfg Config) {
-	log.Println("============= INFO =============")
-	log.Println("DB name: \t", cfg.Database)
-	log.Println("User: \t", cfg.User)
-	log.Println("Host: \t", cfg.Host)
-	log.Println("Protocol:\t", cfg.Protocol)
-	log.Println("Driver:  \t PostgreSQL")
 }

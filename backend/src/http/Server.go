@@ -2,78 +2,40 @@ package http
 
 import (
 	"log"
-	"net"
+	"myapp/services"
+	"net/http"
 )
 
-const (
-	S_LISTENING = 0x00000
-	S_OFF       = 0x00001
-)
-
-const (
-	PROT_TCP   = PROT_TCPv4
-	PROT_TCPv4 = "tcp4"
-	PROT_TCPv6 = "tcp6"
-	PROT_UDP   = PROT_UDPv4
-	PROT_UDPv4 = "udp4"
-	PROT_UDPv6 = "udp6"
-)
-
-type Server struct {
-	m_listener net.Listener
-	m_protocol string
-
-	Status int
+func setupHandlers(mux *http.ServeMux) {
+	mux.HandleFunc("/api/orders", ordersEndpoint)
 }
 
-func (self Server) StartListening(prot string, addr string) {
-	log.Printf("Server is starting to listen at address '%s' using '%s'...\n", addr, prot)
+func ordersEndpoint(responseWriter http.ResponseWriter, request *http.Request) {
+	query := request.URL.Query()
+	orders := query["order_uid"]
+	log.Printf("Client is attempting to get orders by UID = %s", orders)
 
-	self.Status = S_LISTENING
-	listener, err := net.Listen(prot, addr)
+	if len(orders) > 0 {
+		for _, uid := range orders {
+			services.SelectOrderByUid(uid)
+		}
+	}
+}
+
+func StartListening(addr string) {
+	log.Printf("Server is starting to listen at address '%s'...\n", addr)
+
+	mux := http.NewServeMux()
+	setupHandlers(mux)
+	err := http.ListenAndServe(addr, mux)
 
 	if err != nil {
-		self.StopListening()
+		StopListening()
 		log.Println(err)
 		return
 	}
-	defer self.StopListening()
-
-	self.m_listener = listener
-	self.m_protocol = prot
-
-	for {
-		conn, err := self.m_listener.Accept()
-		if err != nil {
-			log.Println(err)
-			conn.Close()
-			continue
-		}
-		go ProcessConnection(conn)
-	}
 }
 
-func (self Server) StopListening() {
-	defer self.m_listener.Close()
-
+func StopListening() {
 	log.Printf("Server is stop listening...\n")
-	self.Status = S_OFF
-	self.m_protocol = ""
-}
-
-func ProcessConnection(conn net.Conn) {
-	defer conn.Close()
-
-	data := make([]byte, 1024*4)
-	n, err := conn.Read(data)
-	if n == 0 || err != nil {
-		log.Println("Read error:", err)
-	}
-
-	source := string(data)
-	log.Println(conn.RemoteAddr(), "is connecting to me!")
-	log.Println("Client is sending:", source)
-
-	message := "Hello, I am a server and I recieved your message!"
-	conn.Write([]byte(message))
 }

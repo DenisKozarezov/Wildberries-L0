@@ -42,10 +42,20 @@ type Delivery struct {
 }
 
 type Order struct {
-	Order_uid    string
-	Track_number string
-	Entry        string
-	Delivery     string
+	Order_uid          string
+	Track_number       string
+	Entry              string
+	Delivery           string
+	Payment            Payment
+	Items              []*Item
+	Locale             string
+	Internal_signature string
+	Customer_id        string
+	Delivery_service   string
+	Shardkey           string
+	Sm_id              int
+	Date_created       string
+	Oof_shard          string
 }
 
 type OrderRepository struct {

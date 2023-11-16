@@ -5,47 +5,47 @@ import (
 )
 
 type Item struct {
-	chrt_id      int
-	track_number string
-	price        int
-	rid          string
-	name         string
-	sale         int
-	size         int
-	total_price  int
-	nm_id        int
-	brand        string
-	status       int
+	Chrt_id      int
+	Track_number string
+	Price        int
+	Rid          string
+	Name         string
+	Sale         int
+	Size         int
+	Total_price  int
+	Nm_id        int
+	Brand        string
+	Status       int
 }
 
 type Payment struct {
-	transaction   string
-	request_id    string
-	currency      string
-	provider      string
-	amount        int
-	payment_dt    int
-	bank          string
-	delivery_cost int
-	goods_total   int
-	custom_fee    int
+	Transaction   string
+	Request_id    string
+	Currency      string
+	Provider      string
+	Amount        int
+	Payment_dt    int
+	Bank          string
+	Delivery_cost int
+	Goods_total   int
+	Custom_fee    int
 }
 
 type Delivery struct {
-	name    string
-	phone   string
-	zip     string
-	city    string
-	address string
-	region  string
-	email   string
+	Name    string
+	Phone   string
+	Zip     string
+	City    string
+	Address string
+	Region  string
+	Email   string
 }
 
 type Order struct {
-	order_uid    string
-	track_number string
-	entry        string
-	delivery     string
+	Order_uid    string
+	Track_number string
+	Entry        string
+	Delivery     string
 }
 
 type OrderRepository struct {
@@ -62,7 +62,7 @@ func (self *OrderRepository) SelectAll() ([]Order, error) {
 	orders := []Order{}
 	for rows.Next() {
 		order := Order{}
-		err := rows.Scan(&order.order_uid, &order.track_number, &order.entry, &order.delivery)
+		err := rows.Scan(&order.Order_uid, &order.Track_number, &order.Entry, &order.Delivery)
 		if err != nil {
 			return nil, fmt.Errorf("Unable to scan row: %w", err)
 		}
@@ -76,7 +76,7 @@ func (self *OrderRepository) SelectByUID(uid string) (*Order, error) {
 	row := db.QueryRow("SELECT DISTINCT * FROM orders WHERE order_uid =$1", uid)
 
 	order := Order{}
-	err := row.Scan(&order.order_uid, &order.track_number, &order.entry, &order.delivery)
+	err := row.Scan(&order.Order_uid, &order.Track_number, &order.Entry, &order.Delivery)
 
 	if err != nil {
 		return nil, fmt.Errorf("Unable to scan row: %w", err)

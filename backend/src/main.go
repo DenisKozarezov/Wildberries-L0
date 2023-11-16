@@ -5,6 +5,7 @@ import (
 	"log"
 	db "myapp/database"
 	http "myapp/http"
+	"myapp/services"
 )
 
 func main() {
@@ -16,6 +17,8 @@ func main() {
 	} else {
 		db.Configurate()
 	}
+
+	services.RestoreCache()
 
 	defer db.Disconnect()
 

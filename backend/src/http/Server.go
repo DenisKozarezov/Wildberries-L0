@@ -11,15 +11,17 @@ func setupHandlers(mux *http.ServeMux) {
 }
 
 func ordersEndpoint(responseWriter http.ResponseWriter, request *http.Request) {
-	query := request.URL.Query()
-	orders := query["order_uid"]
-	log.Printf("Client is attempting to get orders by UID = %s", orders)
+	go func() {
+		query := request.URL.Query()
+		orders := query["order_uid"]
+		log.Printf("Client is attempting to get orders by UID = %s", orders)
 
-	if len(orders) > 0 {
-		for _, uid := range orders {
-			services.SelectOrderByUID(uid)
+		if len(orders) > 0 {
+			for _, uid := range orders {
+				services.SelectOrderByUID(uid)
+			}
 		}
-	}
+	}()
 }
 
 func StartListening(addr string) {

@@ -34,7 +34,7 @@ func SelectAllOrders() ([]db.Order, error) {
 		return nil, err
 	}
 
-	log.Printf("[SELECT ALL ORDERS]:\n%s", orders)
+	log.Println("[SELECT ALL ORDERS]:\n", orders)
 	log.Printf("Selected rows count: %d\n", len(orders))
 
 	return orders, err

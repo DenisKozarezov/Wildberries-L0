@@ -1,6 +1,7 @@
 package database
 
 import (
+	"encoding/json"
 	"fmt"
 )
 
@@ -11,7 +12,7 @@ type Item struct {
 	Rid          string
 	Name         string
 	Sale         int
-	Size         int
+	Size         string
 	Total_price  int
 	Nm_id        int
 	Brand        string
@@ -45,7 +46,7 @@ type Order struct {
 	Order_uid          string
 	Track_number       string
 	Entry              string
-	Delivery           string
+	Delivery           Delivery
 	Payment            Payment
 	Items              []*Item
 	Locale             string
@@ -71,25 +72,42 @@ func (self *OrderRepository) SelectAll() ([]Order, error) {
 
 	orders := []Order{}
 	for rows.Next() {
-		order := Order{}
-		err := rows.Scan(&order.Order_uid, &order.Track_number, &order.Entry, &order.Delivery)
+		var orderUid string
+		var jsonData string
+		err := rows.Scan(&orderUid, &jsonData)
 		if err != nil {
 			return nil, fmt.Errorf("Unable to scan row: %w", err)
 		}
+
+		var order Order
+		err = json.Unmarshal(([]byte)(jsonData), &order)
+
+		if err != nil {
+			return nil, fmt.Errorf("Unable to unmarshal json from the database. %w", err)
+		}
+
 		orders = append(orders, order)
 	}
 
-	return orders, nil
+	return orders, err
 }
 
 func (self *OrderRepository) SelectByUID(uid string) (*Order, error) {
 	row := db.QueryRow("SELECT DISTINCT * FROM orders WHERE order_uid =$1", uid)
 
-	order := Order{}
-	err := row.Scan(&order.Order_uid, &order.Track_number, &order.Entry, &order.Delivery)
+	var orderUid string
+	var jsonData string
+	err := row.Scan(&orderUid, &jsonData)
 
 	if err != nil {
 		return nil, fmt.Errorf("Unable to scan row: %w", err)
+	}
+
+	var order Order
+	err = json.Unmarshal(([]byte)(jsonData), &order)
+
+	if err != nil {
+		return nil, fmt.Errorf("Unable to unmarshal json from the database. %w", err)
 	}
 
 	return &order, err

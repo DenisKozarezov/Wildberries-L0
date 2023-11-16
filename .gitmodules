@@ -1,0 +1,3 @@
+[submodule "backend/nats-server"]
+	path = backend/nats-server
+	url = https://github.com/nats-io/nats-server.git

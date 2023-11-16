@@ -17,7 +17,7 @@ func main() {
 		db.Configurate()
 	}
 
-	defer db.Disonnect()
+	defer db.Disconnect()
 
 	http.StartListening(":8080")
 }

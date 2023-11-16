@@ -55,7 +55,7 @@ func (self *OrderRepository) SelectAll() ([]Order, error) {
 	rows, err := db.Query("SELECT * FROM orders")
 
 	if err != nil {
-		return nil, fmt.Errorf("Unable to query orders: %w\n", err)
+		return nil, err
 	}
 	defer rows.Close()
 
@@ -79,8 +79,12 @@ func (self *OrderRepository) SelectByUID(uid string) (*Order, error) {
 	err := row.Scan(&order.order_uid, &order.track_number, &order.entry, &order.delivery)
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Unable to scan row: %w", err)
 	}
 
 	return &order, err
+}
+
+func (self *OrderRepository) Insert(order *Order) error {
+	return nil
 }

@@ -17,7 +17,7 @@ func ordersEndpoint(responseWriter http.ResponseWriter, request *http.Request) {
 
 	if len(orders) > 0 {
 		for _, uid := range orders {
-			services.SelectOrderByUid(uid)
+			services.SelectOrderByUID(uid)
 		}
 	}
 }

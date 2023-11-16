@@ -5,13 +5,13 @@ import (
 	db "myapp/database"
 )
 
-var orderRep db.OrderRepository = db.OrderRepository{}
+var rep db.IDatabaseRepository[db.Order] = &db.OrderRepository{}
 
-func SelectAll() ([]db.Order, error) {
-	orders, err := orderRep.SelectAll()
+func SelectAllOrders() ([]db.Order, error) {
+	orders, err := rep.SelectAll()
 
 	if err != nil {
-		log.Println(err)
+		log.Fatalf("Unable to query orders! Reason: %s\n", err)
 		return nil, err
 	}
 
@@ -21,15 +21,24 @@ func SelectAll() ([]db.Order, error) {
 	return orders, err
 }
 
-func SelectOrderByUid(uid string) (*db.Order, error) {
-	order, err := orderRep.SelectByUID(uid)
+func SelectOrderByUID(uid string) (*db.Order, error) {
+	order, err := rep.SelectByUID(uid)
 
 	if err != nil {
-		log.Println(err)
+		log.Fatalf("Unable to query an order! Reason: %s\n", err)
 		return nil, err
 	}
 
 	log.Printf("[SELECT ORDER BY UID]: %s", uid)
-	log.Printf("Selected row: %s\n", order)
+	log.Printf("Selected row: %s\n", *order)
 	return order, err
+}
+
+func AddNewOrder(order *db.Order) error {
+	err := rep.Insert(order)
+
+	if err != nil {
+		log.Fatalf("Couldn't add a new order! Reason: %s\n", err)
+	}
+	return err
 }

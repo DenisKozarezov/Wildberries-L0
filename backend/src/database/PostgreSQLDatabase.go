@@ -10,14 +10,6 @@ import (
 
 var db *pgx.Conn
 
-type Config struct {
-	Database string
-	User     string
-	Password string
-	Host     string
-	Protocol string
-}
-
 func Print(cfg *pgx.ConnConfig) {
 	log.Println("============= INFO =============")
 	log.Println("DB Name: \t", cfg.Database)
@@ -59,7 +51,7 @@ func Configurate() {
 
 }
 
-func Disonnect() {
+func Disconnect() {
 	log.Println("Disconnecting from the database...")
 	db.Close()
 }

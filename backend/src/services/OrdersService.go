@@ -1,13 +1,53 @@
 package services
 
 import (
+	"context"
 	"fmt"
 	"log"
 	db "myapp/database"
+	"time"
+
+	"github.com/nats-io/nats.go"
+	"github.com/nats-io/nats.go/jetstream"
 )
 
-var rep db.IDatabaseRepository[db.Order] = &db.OrderRepository{}
+var rep db.IDatabaseRepository[db.Order] = &db.OrdersRepository{}
 var ordersCache Cache[db.Order]
+
+func ConnectToNATS() {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+	nc, err := nats.Connect(nats.DefaultURL)
+
+	if err != nil {
+		log.Println("Could not connect to NATS!")
+		log.Fatalln(err)
+	} else {
+		log.Println("Connected to NATS!")
+	}
+
+	js, _ := jetstream.New(nc)
+	log.Println("JetStream context created.")
+
+	stream, err := js.Stream(ctx, "ORDERS")
+
+	if err != nil {
+		log.Printf("Could not get a stream from NATS connection! %s", err)
+	}
+
+	// Create durable consumer
+	c, _ := stream.CreateOrUpdateConsumer(ctx, jetstream.ConsumerConfig{
+		Durable:   "CONS",
+		AckPolicy: jetstream.AckExplicitPolicy,
+	})
+
+	// Receive messages continuously in a callback
+	c.Consume(func(msg jetstream.Msg) {
+		msg.Ack()
+		fmt.Printf("Received a JetStream message via callback: %s\n", string(msg.Data()))
+	})
+	// defer cons.Stop()
+}
 
 func RestoreCache() {
 	log.Println("Restoring the cache...")
@@ -24,6 +64,8 @@ func RestoreCache() {
 		log.Printf("[%d] Adding %s in cache...", i, order)
 		ordersCache.Add(order.Order_uid, &order)
 	}
+
+	log.Println("Cache restored.")
 }
 
 func SelectAllOrders() ([]db.Order, error) {

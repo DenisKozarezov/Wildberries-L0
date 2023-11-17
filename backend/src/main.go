@@ -8,7 +8,7 @@ import (
 	"myapp/services"
 )
 
-func main() {
+func ConnectToDatabase() {
 	ctx := context.Background()
 	err := db.Connect(ctx, "postgres", "root", "wildberriesDb")
 
@@ -17,8 +17,13 @@ func main() {
 	} else {
 		db.Configurate()
 	}
+}
+
+func main() {
+	ConnectToDatabase()
 
 	services.RestoreCache()
+	services.ConnectToNATS()
 
 	defer db.Disconnect()
 

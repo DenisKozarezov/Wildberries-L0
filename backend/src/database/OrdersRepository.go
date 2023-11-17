@@ -59,10 +59,10 @@ type Order struct {
 	Oof_shard          string
 }
 
-type OrderRepository struct {
+type OrdersRepository struct {
 }
 
-func (self *OrderRepository) SelectAll() ([]Order, error) {
+func (self *OrdersRepository) SelectAll() ([]Order, error) {
 	rows, err := db.Query("SELECT * FROM orders")
 
 	if err != nil {
@@ -92,7 +92,7 @@ func (self *OrderRepository) SelectAll() ([]Order, error) {
 	return orders, err
 }
 
-func (self *OrderRepository) SelectByUID(uid string) (*Order, error) {
+func (self *OrdersRepository) SelectByUID(uid string) (*Order, error) {
 	row := db.QueryRow("SELECT DISTINCT * FROM orders WHERE order_uid =$1", uid)
 
 	var orderUid string
@@ -113,6 +113,6 @@ func (self *OrderRepository) SelectByUID(uid string) (*Order, error) {
 	return &order, err
 }
 
-func (self *OrderRepository) Insert(order *Order) error {
+func (self *OrdersRepository) Insert(order *Order) error {
 	return nil
 }

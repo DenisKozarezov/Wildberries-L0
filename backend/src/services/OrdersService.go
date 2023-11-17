@@ -14,6 +14,11 @@ import (
 var rep db.IDatabaseRepository[db.Order] = &db.OrdersRepository{}
 var ordersCache Cache[db.Order]
 
+func ordersHandler(msg jetstream.Msg) {
+	msg.Ack()
+	fmt.Printf("Received a JetStream message via callback: %s\n", string(msg.Data()))
+}
+
 func ConnectToNATS() {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
@@ -42,10 +47,7 @@ func ConnectToNATS() {
 	})
 
 	// Receive messages continuously in a callback
-	c.Consume(func(msg jetstream.Msg) {
-		msg.Ack()
-		fmt.Printf("Received a JetStream message via callback: %s\n", string(msg.Data()))
-	})
+	c.Consume(ordersHandler)
 	// defer cons.Stop()
 }
 
@@ -104,11 +106,11 @@ func SelectOrderByUID(uid string) (*db.Order, error) {
 	}
 }
 
-func AddNewOrder(order *db.Order) error {
-	err := rep.Insert(order)
+func AddNewOrder(order_uid string, data string) error {
+	err := rep.Insert(order_uid, data)
 
 	if err != nil {
-		log.Printf("Couldn't add a new order! Reason: %s\n", err)
+		log.Printf("Unable to add a new order! Reason: %s\n", err)
 	}
 	return err
 }

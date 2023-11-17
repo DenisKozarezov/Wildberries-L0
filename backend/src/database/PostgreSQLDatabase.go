@@ -10,7 +10,7 @@ import (
 
 var db *pgx.Conn
 
-func Print(cfg *pgx.ConnConfig) {
+func print(cfg *pgx.ConnConfig) {
 	log.Println("============= INFO =============")
 	log.Println("DB Name: \t", cfg.Database)
 	log.Println("User: \t", cfg.User)
@@ -18,14 +18,14 @@ func Print(cfg *pgx.ConnConfig) {
 	log.Println("Port: \t", cfg.Port)
 }
 
-func Connect(ctx context.Context, login string, pass string, dbName string) error {
+func connect(ctx context.Context, login string, pass string, dbName string) error {
 	log.Println("Opening a connection to database...")
 
 	connectionStr := fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=disable", login, pass, "localhost:5432", dbName)
 	cfg, err := pgx.ParseConnectionString(connectionStr)
 	log.Println("Connection string:", connectionStr)
 
-	defer Print(&cfg)
+	defer print(&cfg)
 
 	// Get a database handle.
 	db, err = pgx.Connect(cfg)
@@ -34,7 +34,7 @@ func Connect(ctx context.Context, login string, pass string, dbName string) erro
 		return err
 	}
 
-	pingErr := Ping(ctx)
+	pingErr := ping(ctx)
 	if err != nil {
 		return pingErr
 	}
@@ -43,12 +43,17 @@ func Connect(ctx context.Context, login string, pass string, dbName string) erro
 	return err
 }
 
-func Ping(ctx context.Context) error {
+func ping(ctx context.Context) error {
 	return db.Ping(ctx)
 }
 
-func Configurate() {
+func ConnectToDatabase() {
+	ctx := context.Background()
+	err := connect(ctx, "postgres", "root", "wildberriesDb")
 
+	if err != nil {
+		log.Fatalln(err)
+	}
 }
 
 func Disconnect() {

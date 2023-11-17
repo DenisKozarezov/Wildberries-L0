@@ -80,7 +80,7 @@ func (self *OrdersRepository) SelectAll() ([]Order, error) {
 		}
 
 		var order Order
-		err = json.Unmarshal(([]byte)(jsonData), &order)
+		err = json.Unmarshal([]byte(jsonData), &order)
 
 		if err != nil {
 			return nil, fmt.Errorf("Unable to unmarshal json from the database. %w", err)
@@ -104,7 +104,7 @@ func (self *OrdersRepository) SelectByUID(uid string) (*Order, error) {
 	}
 
 	var order Order
-	err = json.Unmarshal(([]byte)(jsonData), &order)
+	err = json.Unmarshal([]byte(jsonData), &order)
 
 	if err != nil {
 		return nil, fmt.Errorf("Unable to unmarshal json from the database. %w", err)
@@ -113,6 +113,13 @@ func (self *OrdersRepository) SelectByUID(uid string) (*Order, error) {
 	return &order, err
 }
 
-func (self *OrdersRepository) Insert(order *Order) error {
+func (self *OrdersRepository) Insert(order_uid string, data string) error {
+	var err error
+	_, err = db.Exec("INSERT INTO orders (order_uid, json) VALUES ($1, $2)", order_uid, data)
+
+	if err != nil {
+		return fmt.Errorf("Could not insert into database: %w", err)
+	}
+
 	return nil
 }

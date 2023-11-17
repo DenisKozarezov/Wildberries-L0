@@ -16,18 +16,18 @@ const (
 	Subjects   = "ORDERS.*"
 )
 
-func PublishNewOrder(ctx context.Context, js jetstream.JetStream, i int) {
+func PublishNewOrder(js jetstream.JetStream, i int) {
 	js.PublishAsync("ORDERS.new", []byte("hello message "+strconv.Itoa(i)))
 	log.Printf("[JetStream] Published a new order %d.\n", i)
 }
 
-func ConnectToNATS() (context.Context, jetstream.JetStream, error) {
+func ConnectToNATS() (jetstream.JetStream, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 	nc, err := nats.Connect(nats.DefaultURL)
 
 	if err != nil {
-		return nil, nil, fmt.Errorf("Could not connect to NATS! %w", err)
+		return nil, fmt.Errorf("Could not connect to NATS! %w", err)
 	} else {
 		log.Println("Connected to NATS!")
 	}
@@ -36,12 +36,12 @@ func ConnectToNATS() (context.Context, jetstream.JetStream, error) {
 	js, err := CreateJetStream(ctx, nc)
 
 	if err != nil {
-		return nil, nil, fmt.Errorf("Could not create a JetStream! %w", err)
+		return nil, fmt.Errorf("Could not create a JetStream! %w", err)
 	} else {
 		log.Println("Stream created!")
 	}
 
-	return ctx, js, nil
+	return js, nil
 }
 
 func CreateJetStream(ctx context.Context, nc *nats.Conn) (jetstream.JetStream, error) {
@@ -62,7 +62,7 @@ func CreateJetStream(ctx context.Context, nc *nats.Conn) (jetstream.JetStream, e
 }
 
 func main() {
-	ctx, js, err := ConnectToNATS()
+	js, err := ConnectToNATS()
 
 	if err != nil {
 		log.Fatalln(err)
@@ -70,6 +70,6 @@ func main() {
 
 	// Publish some messages
 	for i := 0; i < 100; i++ {
-		PublishNewOrder(ctx, js, i)
+		PublishNewOrder(js, i)
 	}
 }

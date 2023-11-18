@@ -3,60 +3,61 @@ package database
 import (
 	"encoding/json"
 	"fmt"
+	"time"
 )
 
-type Item struct {
-	Chrt_id      int
-	Track_number string
-	Price        int
-	Rid          string
-	Name         string
-	Sale         int
-	Size         string
-	Total_price  int
-	Nm_id        int
-	Brand        string
-	Status       int
-}
-
-type Payment struct {
-	Transaction   string
-	Request_id    string
-	Currency      string
-	Provider      string
-	Amount        int
-	Payment_dt    int
-	Bank          string
-	Delivery_cost int
-	Goods_total   int
-	Custom_fee    int
+type Order struct {
+	Order_uid          string   `validate:"required"`
+	Track_number       string   `validate:"required"`
+	Entry              string   `validate:"required"`
+	Delivery           Delivery `validate:"required"`
+	Payment            Payment  `validate:"required"`
+	Items              []Item
+	Locale             string `validate:"required"`
+	Internal_signature string
+	Customer_id        string    `validate:"required"`
+	Delivery_service   string    `validate:"required"`
+	Shardkey           string    `validate:"required"`
+	Sm_id              int       `validate:"required"`
+	Date_created       time.Time `validate:"required"`
+	Oof_shard          string    `validate:"required"`
 }
 
 type Delivery struct {
-	Name    string
-	Phone   string
-	Zip     string
-	City    string
-	Address string
-	Region  string
-	Email   string
+	Name    string `validate:"required"`
+	Phone   string `validate:"required"`
+	Zip     string `validate:"required"`
+	City    string `validate:"required"`
+	Address string `validate:"required"`
+	Region  string `validate:"required"`
+	Email   string `validate:"required"`
 }
 
-type Order struct {
-	Order_uid          string
-	Track_number       string
-	Entry              string
-	Delivery           Delivery
-	Payment            Payment
-	Items              []*Item
-	Locale             string
-	Internal_signature string
-	Customer_id        string
-	Delivery_service   string
-	Shardkey           string
-	Sm_id              int
-	Date_created       string
-	Oof_shard          string
+type Payment struct {
+	Transaction   string `validate:"required"`
+	Request_id    string
+	Currency      string `validate:"required"`
+	Provider      string `validate:"required"`
+	Amount        int    `validate:"required"`
+	Payment_dt    int64  `validate:"required"`
+	Bank          string `validate:"required"`
+	Delivery_cost int    `validate:"required"`
+	Goods_total   int    `validate:"required"`
+	Custome_fee   int
+}
+
+type Item struct {
+	Chrt_id      int    `validate:"required"`
+	Track_number string `validate:"required"`
+	Price        int    `validate:"required"`
+	Rid          string `validate:"required"`
+	Name         string `validate:"required"`
+	Sale         int    `validate:"required"`
+	Size         string `validate:"required"`
+	Total_price  int    `validate:"required"`
+	Nm_id        int    `validate:"required"`
+	Brand        string `validate:"required"`
+	Status       int    `validate:"required"`
 }
 
 type OrdersRepository struct {

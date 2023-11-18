@@ -8,6 +8,7 @@ import (
 	db "myapp/database"
 	"time"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/nats-io/nats.go"
 	"github.com/nats-io/nats.go/jetstream"
 )
@@ -15,18 +16,36 @@ import (
 var rep db.IDatabaseRepository[db.Order] = &db.OrdersRepository{}
 var ordersCache Cache[db.Order]
 
+func validate(order *db.Order) validator.ValidationErrors {
+	validate := validator.New()
+	if err := validate.Struct(order); err != nil {
+		errs := err.(validator.ValidationErrors)
+		for _, fieldErr := range errs {
+			fmt.Printf("Field %s: %s\n", fieldErr.Field(), fieldErr.Tag())
+		}
+		return errs
+	}
+	return nil
+}
+
 func ordersHandler(msg jetstream.Msg) {
 	msg.Ack()
 
 	bytes := msg.Data()
 	data := string(bytes)
 
-	fmt.Printf("Received a JetStream message via callback: %s\n", data)
+	log.Printf("Received a JetStream message via callback: %s\n", data)
 
 	var order db.Order
 	if err := json.Unmarshal(bytes, &order); err != nil {
 		log.Println("Unable to unmarshal from NATS!", err)
 		return
+	}
+
+	if errs := validate(&order); len(errs) == 0 {
+		log.Println("Validation succeeded!")
+	} else {
+		log.Println("Validation failed!")
 	}
 
 	if err := AddNewOrder(order.Order_uid, data); err != nil {

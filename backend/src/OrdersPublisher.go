@@ -69,7 +69,7 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	for i := 1; i < 4; i++ {
+	for i := 1; i < 5; i++ {
 		filepath := "../../data/order" + strconv.Itoa(i) + ".json"
 		data, err := os.ReadFile(filepath)
 

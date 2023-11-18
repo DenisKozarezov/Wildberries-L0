@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"os"
 	"strconv"
 	"time"
 
@@ -16,9 +17,9 @@ const (
 	Subjects   = "ORDERS.*"
 )
 
-func PublishNewOrder(js jetstream.JetStream, i int) {
-	js.PublishAsync("ORDERS.new", []byte("hello message "+strconv.Itoa(i)))
-	log.Printf("[JetStream] Published a new order %d.\n", i)
+func PublishNewOrder(js jetstream.JetStream, data []byte) {
+	js.PublishAsync("ORDERS.new", data)
+	log.Printf("[JetStream] Published a new order: %s.\n", data)
 }
 
 func ConnectToNATS() (jetstream.JetStream, error) {
@@ -68,8 +69,16 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	// Publish some messages
-	for i := 0; i < 100; i++ {
-		PublishNewOrder(js, i)
+	for i := 1; i < 4; i++ {
+		filepath := "../../data/order" + strconv.Itoa(i) + ".json"
+		data, err := os.ReadFile(filepath)
+
+		if err != nil {
+			log.Fatalf("Couldn't read a file '%s'! %w", filepath, err)
+		} else {
+			log.Printf("File '%s' is successfully read.\n", filepath)
+		}
+
+		PublishNewOrder(js, data)
 	}
 }

@@ -44,12 +44,12 @@ func ordersHandler(msg jetstream.Msg) {
 
 	if errs := validate(&order); len(errs) == 0 {
 		log.Println("Validation succeeded!")
+
+		if err := AddNewOrder(order.Order_uid, data); err != nil {
+			log.Println(err)
+		}
 	} else {
 		log.Println("Validation failed!")
-	}
-
-	if err := AddNewOrder(order.Order_uid, data); err != nil {
-		log.Println(err)
 	}
 }
 

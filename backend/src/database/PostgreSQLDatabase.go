@@ -34,17 +34,12 @@ func connect(ctx context.Context, login string, pass string, dbName string) erro
 		return err
 	}
 
-	pingErr := ping(ctx)
-	if err != nil {
+	// Check the connection
+	if pingErr := db.Ping(ctx); pingErr != nil {
 		return pingErr
 	}
-
 	log.Println("Connected to database!")
 	return err
-}
-
-func ping(ctx context.Context) error {
-	return db.Ping(ctx)
 }
 
 func ConnectToDatabase() {

@@ -4,36 +4,44 @@ import { useState } from 'react';
 
 const ordersEndpoint = "http://localhost:8080/api/orders"
 
-function ordersSubmitHandler(orderUid) {
-  fetch(`${ordersEndpoint}?order_uid=${orderUid}`, {
-      mode: 'no-cors',
+function OrdersForm() {
+  const[data, setData] = useState('')
+  const[inputData, setInputData] = useState('');
+
+  const handleInputChange = (event) => {
+    setInputData(event.target.value);
+  }
+  
+  function handleSubmit() {
+    fetch(`${ordersEndpoint}?order_uid=${inputData}`, {
       method: "get",
       headers: {
-         "Content-Type": "application/json; charset=utf-8"
+        "Content-Type": "application/json; charset=utf-8",
+        "Access-Control-Allow-Origin": "http://localhost:3000",
+        "Access-Control-Allow-Credentials": "true",
+        "Access-Control-Allow-Methods": "GET",
+        "Access-Control-Allow-Headers": "Content-Type, access-control-allow-origin, access-control-allow-headers, access-control-allow-methods, access-control-allow-credentials",
+        Accept: "application/json",
       },
+      crossorigin: true,    
     })
-    .then(async response => {
-      const data = await response.json()
-
-      if (!response.ok) {
-        // get error message from body or default to response statusText
-        const error = (data && data.message) || response.statusText;
-        return Promise.reject(error);
-      }
-    })
+    .then(async response => await response.json())
+    .then(jsonData => setData(JSON.stringify(jsonData, undefined, 2)))
     .catch(error => {
-      console.error('There was an error!', error);
-  });
-}
+      console.error(error);
+    });
+  }
 
-function OrdersForm() {
-  const [orderUID, setOrderUID] = useState('');
   return (
     <div>
-      <input name="myInput" value={orderUID} placeholder="Введите ID заказа" onChange={e => setOrderUID(e.target.value)}/>
-      <button onClick={() => ordersSubmitHandler(orderUID)}>
+      <input name="myInput" value={inputData} placeholder="Введите ID заказа" onChange={handleInputChange}/>
+      <button onClick={handleSubmit}>
         Find
       </button>
+      <div>
+        <strong>Ваш заказ</strong>
+        <p>{data}</p>
+      </div>
     </div>
   );
 }

@@ -92,8 +92,8 @@ func RestoreCache() {
 	}
 
 	for i, order := range orders {
-		log.Printf("[%d] Adding %s in cache...", i, order)
-		ordersCache.Add(order.Order_uid, &order)
+		log.Printf("[%d] Adding %s in cache...", i, order.Order_uid)
+		ordersCache.Add(order.Order_uid, order)
 	}
 
 	log.Println("Cache restored.")

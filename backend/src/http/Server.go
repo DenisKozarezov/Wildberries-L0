@@ -13,7 +13,11 @@ func setupHandlers(mux *http.ServeMux) {
 }
 
 func ordersHandler(w http.ResponseWriter, request *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+	w.Header().Set("Access-Control-Allow-Credentials", "true")
+	w.Header().Set("Access-Control-Allow-Methods", "GET")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type,access-control-allow-origin, access-control-allow-headers, access-control-allow-methods, access-control-allow-credentials")
+	w.Header().Set("Content-Type", "application/json; charset=utf-8;")
 
 	query := request.URL.Query()
 	order_uids := query["order_uid"]
@@ -33,11 +37,11 @@ func ordersHandler(w http.ResponseWriter, request *http.Request) {
 	}
 
 	if len(foundContent) > 0 {
-		response, err := json.Marshal(foundContent)
+		_, err := json.Marshal(foundContent)
 		if err != nil {
 			log.Fatalf("Error happened in JSON marshal. Err: %s", err)
 		}
-		w.Write(response)
+		json.NewEncoder(w).Encode(foundContent)
 	} else {
 		w.WriteHeader(http.StatusNoContent)
 	}

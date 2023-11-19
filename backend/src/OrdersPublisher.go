@@ -25,8 +25,8 @@ func PublishNewOrder(js jetstream.JetStream, data []byte) {
 func ConnectToNATS() (jetstream.JetStream, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
-	nc, err := nats.Connect(nats.DefaultURL)
 
+	nc, err := nats.Connect(nats.DefaultURL)
 	if err != nil {
 		return nil, fmt.Errorf("Could not connect to NATS! %w", err)
 	} else {
@@ -34,15 +34,12 @@ func ConnectToNATS() (jetstream.JetStream, error) {
 	}
 
 	// Create jetstream context from nats connection
-	js, err := CreateJetStream(ctx, nc)
-
-	if err != nil {
+	if js, err := CreateJetStream(ctx, nc); err != nil {
 		return nil, fmt.Errorf("Could not create a JetStream! %w", err)
 	} else {
 		log.Println("Stream created!")
+		return js, nil
 	}
-
-	return js, nil
 }
 
 func CreateJetStream(ctx context.Context, nc *nats.Conn) (jetstream.JetStream, error) {

@@ -4,21 +4,21 @@
   "entry": "WBIL",
   "delivery": {
     "name": "Ivan Ivanov",
-    "phone": "+9721456602",
+    "phone": "+7741452613",
     "zip": "2639809",
     "city": "Moscow",
-    "address": "Ploshad Mira 15",
+    "address": "Ploshad Iliicha 15",
     "region": "Kraiot",
-    "email": "test1@gmail.com"
+    "email": "ivanov_i@gmail.com"
   },
   "payment": {
     "transaction": "a553feb7h3b84j7test",
     "request_id": "",
     "currency": "RUB",
     "provider": "wbpay",
-    "amount": 1817,
+    "amount": 5432,
     "payment_dt": 1637907727,
-    "bank": "alpha",
+    "bank": "sber",
     "delivery_cost": 1500,
     "goods_total": 317,
     "custom_fee": 0

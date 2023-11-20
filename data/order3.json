@@ -4,28 +4,28 @@
   "entry": "WBIL",
   "delivery": {
     "name": "Semen Alekseev",
-    "phone": "+9721456602",
+    "phone": "+7721456602",
     "zip": "2639809",
     "city": "Saint Petersburg",
-    "address": "Ploshad Mira 15",
+    "address": "Ploshad Truda 15",
     "region": "Kraiot",
-    "email": "test3@gmail.com"
+    "email": "alekseev_s@gmail.com"
   },
   "payment": {
     "transaction": "o35fse23y63gs35test",
     "request_id": "",
-    "currency": "RUB",
+    "currency": "USD",
     "provider": "wbpay",
     "amount": 1817,
     "payment_dt": 1637907727,
-    "bank": "alpha",
+    "bank": "tinkoff",
     "delivery_cost": 1500,
     "goods_total": 317,
     "custom_fee": 0
   },
   "items": [
     {
-      "chrt_id": 9934930,
+      "chrt_id": 9195145,
       "track_number": "WT53GEG58KVE3TRACK",
       "price": 453,
       "rid": "ab4219087a764ae0btest",

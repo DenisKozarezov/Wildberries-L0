@@ -4,12 +4,12 @@
   "entry": "WBIL",
   "delivery": {
     "name": "Petr Petrov",
-    "phone": "+9721456602",
+    "phone": "+7921456602",
     "zip": "2639809",
     "city": "Voronezh",
     "address": "Ploshad Mira 15",
     "region": "Kraiot",
-    "email": "test2@gmail.com"
+    "email": "petrov_p@gmail.com"
   },
   "payment": {
     "transaction": "ag2wth32h225g23test",
@@ -25,7 +25,7 @@
   },
   "items": [
     {
-      "chrt_id": 9934930,
+      "chrt_id": 6346347,
       "track_number": "AOT8VJDS4TRACK",
       "price": 453,
       "rid": "ab4219087a764ae0btest",

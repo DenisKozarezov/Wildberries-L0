@@ -36,7 +36,7 @@ function OrdersForm() {
     <div>
       <input name="myInput" value={inputData} placeholder="Введите ID заказа" onChange={handleInputChange}/>
       <button onClick={handleSubmit}>
-        Find
+        Найти
       </button>
       <div>
         <strong>Ваш заказ</strong>
@@ -59,7 +59,7 @@ function App() {
         >
           Wildberries Internship
         </a>
-        (Level 0)
+          (Level 0)
         <OrdersForm />
       </header>
     </div>
